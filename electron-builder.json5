@@ -40,8 +40,7 @@
       "deb",
       "pacman",
       "tar.gz"
-    ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
+    ]
   },
   "publish": {
     "provider": "github",
