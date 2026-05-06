@@ -143,7 +143,7 @@ function App() {
             <Pickaxe className="text-gold h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">S-Coin Miner</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Lumina Miner</h1>
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               <span className={`h-2 w-2 rounded-full ${isMining ? 'bg-success animate-pulse' : 'bg-muted'}`}></span>
               {status}
@@ -249,7 +249,7 @@ function App() {
               </div>
               <div className="mt-4 p-3 rounded-lg bg-background/50 border border-border flex justify-between items-center">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase">Est. Reward</span>
-                <span className="font-mono text-gold font-bold">{getDifficultySettings().reward} SC</span>
+                <span className="font-mono text-gold font-bold">{getDifficultySettings().reward} LMN</span>
               </div>
             </div>
           </div>

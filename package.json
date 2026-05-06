@@ -1,10 +1,10 @@
 {
-  "name": "miner-app",
-  "description": "S-Coin Cryptocurrency GUI Miner",
+  "name": "lumina-miner",
+  "description": "LuminaMiner Cryptocurrency GUI Miner",
   "author": "SchoolEconomy <admin@schooleconomy.com>",
   "homepage": "https://schooleconomy.com",
   "private": true,
-  "version": "1.0.8",
+  "version": "1.0.9",
   "repository": {
     "type": "git",
     "url": "https://github.com/constructor2828-web/SCoinMiner.git"
