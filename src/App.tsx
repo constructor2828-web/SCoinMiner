@@ -7,10 +7,18 @@ function App() {
   const [isMining, setIsMining] = useState(false);
   const [hashRate, setHashRate] = useState(0);
   const [blocksMined, setBlocksMined] = useState(0);
-  const [difficulty, setDifficulty] = useState(4);
+  const [difficultyLevel, setDifficultyLevel] = useState<'easy' | 'medium' | 'hard'>('medium');
   const [walletAddress, setWalletAddress] = useState(localStorage.getItem('miner_wallet') || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState('Ready');
+
+  const getDifficultySettings = () => {
+    switch(difficultyLevel) {
+      case 'easy': return { zeros: 3, reward: 0.05 };
+      case 'medium': return { zeros: 4, reward: 0.15 };
+      case 'hard': return { zeros: 5, reward: 0.50 };
+    }
+  };
   
   const workerRef = useRef<Worker | null>(null);
 
@@ -47,7 +55,7 @@ function App() {
     setStatus('Submitting Block...');
     
     try {
-      const reward = 0.5; // SC reward per block
+      const { reward } = getDifficultySettings();
       const { error } = await supabase.rpc('submit_block', {
         p_miner_wallet: walletAddress,
         p_nonce: payload.nonce,
@@ -98,11 +106,12 @@ function App() {
           
           // Continue mining after submission
           if (workerRef.current) {
+              const { zeros } = getDifficultySettings();
               workerRef.current.postMessage({
                 type: 'START_MINING',
                 payload: {
                   blockData: `S-Coin-Block-${Date.now()}`,
-                  difficulty: difficulty,
+                  difficulty: zeros,
                   minerWallet: walletAddress,
                 },
               });
@@ -110,11 +119,12 @@ function App() {
         }
       };
 
+      const { zeros } = getDifficultySettings();
       workerRef.current.postMessage({
         type: 'START_MINING',
         payload: {
           blockData: `S-Coin-Block-${Date.now()}`,
-          difficulty: difficulty,
+          difficulty: zeros,
           minerWallet: walletAddress,
         },
       });
@@ -213,20 +223,35 @@ function App() {
           </div>
 
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm flex-1 group transition-all hover:border-orange-500/50">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-4">
                <div className="p-2 bg-orange-500/10 rounded-lg group-hover:bg-orange-500/20 transition-colors">
                 <Settings className="h-5 w-5 text-orange-500" />
               </div>
-              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-tight">Difficulty</h3>
+              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-tight">Difficulty Level</h3>
             </div>
-            <div className="flex items-center gap-4">
-                <span className="text-5xl font-black">{difficulty}</span>
-                <div className="flex flex-col">
-                    <button onClick={() => setDifficulty(d => Math.min(d + 1, 10))} className="p-1 hover:bg-muted rounded">+</button>
-                    <button onClick={() => setDifficulty(d => Math.max(d - 1, 1))} className="p-1 hover:bg-muted rounded">-</button>
-                </div>
+            
+            <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-3 gap-2">
+                {(['easy', 'medium', 'hard'] as const).map((level) => (
+                  <button
+                    key={level}
+                    onClick={() => setDifficultyLevel(level)}
+                    disabled={isMining}
+                    className={`py-2 rounded-lg text-xs font-bold uppercase transition-all ${
+                      difficultyLevel === level 
+                        ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' 
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    } disabled:opacity-50`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-4 p-3 rounded-lg bg-background/50 border border-border flex justify-between items-center">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">Est. Reward</span>
+                <span className="font-mono text-gold font-bold">{getDifficultySettings().reward} SC</span>
+              </div>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2 font-mono">Increase difficulty for higher value blocks.</p>
           </div>
         </div>
       </main>
